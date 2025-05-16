@@ -366,11 +366,6 @@
     .card:nth-child(3) { animation-delay: 0.3s; }
     .card:nth-child(4) { animation-delay: 0.4s; }
     .card:nth-child(5) { animation-delay: 0.5s; }
-    .card:nth-child(6) { animation-delay: 0.6s; }
-    .card:nth-child(7) { animation-delay: 0.7s; }
-    .card:nth-child(8) { animation-delay: 0.8s; }
-    .card:nth-child(9) { animation-delay: 0.9s; }
-    .card:nth-child(10) { animation-delay: 1s; }
     
     /* Loading animation */
     @keyframes pulse {
@@ -481,6 +476,34 @@
       100% { transform: scale(1); }
     }
     
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 30px 0;
+    }
+    
+    .page-btn {
+      background: var(--light);
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .page-btn:hover:not(.active) {
+      background: rgba(255, 111, 97, 0.1);
+    }
+    
     /* Responsive adjustments */
     @media (max-width: 768px) {
       header {
@@ -559,7 +582,8 @@
     <div class="skeleton-card"></div>
   </div>
   
-  <main>
+  <main id="page1">
+    <!-- Page 1 Products (1-5) -->
     <!-- Product 1 -->
     <div class="card" data-category="bike">
       <button class="like-btn" aria-label="Add to favorites">
@@ -639,7 +663,10 @@
         </button>
       </div>
     </div>
-    
+  </main>
+
+  <main id="page2" style="display:none;">
+    <!-- Page 2 Products (6-10) -->
     <!-- Product 6 -->
     <div class="card" data-category="bike">
       <button class="like-btn" aria-label="Add to favorites">
@@ -704,6 +731,12 @@
       </div>
     </div>
   </main>
+  
+  <!-- Pagination -->
+  <div class="pagination">
+    <button class="page-btn active" data-page="1">1</button>
+    <button class="page-btn" data-page="2">2</button>
+  </div>
   
   <!-- Quick View Modal -->
   <div class="modal" id="quickViewModal">
@@ -900,6 +933,30 @@
         if (e.target === modal) {
           modal.style.display = 'none';
         }
+      });
+      
+      // Pagination
+      const pageButtons = document.querySelectorAll('.page-btn');
+      const pages = document.querySelectorAll('main');
+      
+      pageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const pageNum = this.getAttribute('data-page');
+          
+          // Update active button
+          pageButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Show selected page
+          pages.forEach(page => {
+            if (page.id === `page${pageNum}`) {
+              page.style.display = 'grid';
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+              page.style.display = 'none';
+            }
+          });
+        });
       });
       
       // Simulate loading (for demo purposes)
