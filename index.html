@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A+B Toys Catalog</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+  <style>
+    :root {
+      --primary: #ff6f61;
+      --primary-light: #ff8e83;
+      --secondary: #6a8d92;
+      --light: #f7f3e9;
+      --dark: #333;
+      --gray: #666;
+    }
+    
+    /* Dark Mode Colors */
+    [data-theme="dark"] {
+      --primary: #ff8e83;
+      --primary-light: #ff6f61;
+      --light: #121212;
+      --dark: #f0f0f0;
+      --gray: #aaa;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--light);
+      color: var(--dark);
+      margin: 0; 
+      padding: 0;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    
+    /* Smooth Scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    header {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 2rem;
+      font-weight: 700;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.1) 50%, transparent 75%);
+      background-size: 200% 200%;
+      animation: shine 3s infinite;
+    }
+    
+    @keyframes shine {
+      0% { background-position: 100% 100%; }
+      100% { background-position: 0 0; }
+    }
+    
+    .search-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 20px;
+      position: relative;
+    }
+    
+    #search {
+      width: 100%;
+      padding: 12px 20px;
+      border: 2px solid var(--primary);
+      border-radius: 30px;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background: var(--light);
+      color: var(--dark);
+    }
+    
+    #search:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 10px rgba(106, 141, 146, 0.5);
+    }
+    
+    .filter-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    .filter-btn {
+      background: var(--light);
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    main {
+      padding: 20px;
+      max-width: 1200px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    
+    .card {
+      background: var(--light);
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s forwards;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+    }
+    
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-bottom: 2px solid var(--primary);
+      transition: transform 0.5s;
+    }
+    
+    .card:hover img {
+      transform: scale(1.08);
+    }
+    
+    .card .info {
+      padding: 15px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .card .info h3 {
+      margin: 10px 0 5px;
+      font-size: 1.2rem;
+      color: var(--dark);
+      transition: color 0.3s;
+    }
+    
+    .card:hover .info h3 {
+      color: var(--primary);
+    }
+    
+    .card .info p {
+      color: var(--gray);
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+    
+    .add-to-cart {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .add-to-cart:hover {
+      background: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .add-to-cart:active {
+      transform: translateY(0);
+    }
+    
+    /* Quick View Button */
+    .quick-view {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.9);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 2;
+    }
+    
+    .card:hover .quick-view {
+      opacity: 1;
+      bottom: 90px;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: var(--light);
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 800px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: modalFadeIn 0.3s;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+    }
+    
+    /* Skeleton Loading */
+    .skeleton-loading {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      padding: 20px;
+    }
+    
+    .skeleton-card {
+      height: 350px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 12px;
+    }
+    
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    
+    /* Cart Counter */
+    .cart-counter {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: var(--primary);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      z-index: 1001;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .card:hover::before {
+      opacity: 1;
+    }
+    
+    footer {
+      margin: 40px 0 20px;
+      font-size: 0.9rem;
+      color: var(--gray);
+      text-align: center;
+      width: 100%;
+    }
+    
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    
+    .social-icons a {
+      color: var(--primary);
+      font-size: 1.2rem;
+      transition: transform 0.3s, color 0.3s;
+    }
+    
+    .social-icons a:hover {
+      color: var(--secondary);
+      transform: translateY(-3px) scale(1.2);
+    }
+    
+    /* Animation delays for cards */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    .card:nth-child(5) { animation-delay: 0.5s; }
+    .card:nth-child(6) { animation-delay: 0.6s; }
+    .card:nth-child(7) { animation-delay: 0.7s; }
+    .card:nth-child(8) { animation-delay: 0.8s; }
+    .card:nth-child(9) { animation-delay: 0.9s; }
+    .card:nth-child(10) { animation-delay: 1s; }
+    
+    /* Loading animation */
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 20px 0;
+      animation: pulse 1.5s infinite;
+      color: var(--primary);
+    }
+    
+    /* Dark Mode Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+    }
+    
+    .theme-toggle:hover {
+      transform: scale(1.1);
+    }
+    
+    /* Back to Top Button */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      transition: all 0.3s;
+      opacity: 0;
+    }
+    
+    .back-to-top.visible {
+      display: flex;
+      opacity: 1;
+    }
+    
+    .back-to-top:hover {
+      transform: translateY(-3px);
+      background: var(--primary-light);
+    }
+    
+    /* Like Button */
+    .like-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255,255,255,0.8);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 1;
+    }
+    
+    .like-btn:hover {
+      color: var(--primary);
+      transform: scale(1.1);
+    }
+    
+    .like-btn.active {
+      color: #ff4757;
+      animation: heartBeat 0.6s;
+    }
+    
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.2); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      header {
+        font-size: 1.5rem;
+        padding: 15px 0;
+      }
+      
+      .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+      
+      .filter-buttons {
+        gap: 8px;
+      }
+      
+      .filter-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+      }
+      
+      main {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 15px;
+      }
+      
+      .card img {
+        height: 180px;
+      }
+      
+      .back-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+      }
+      
+      .cart-counter {
+        top: 15px;
+        left: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cart Counter -->
+  <div class="cart-counter">0</div>
+  
+  <!-- Dark Mode Toggle -->
+  <button class="theme-toggle" aria-label="Toggle dark mode">
+    <i class="fas fa-moon"></i>
+  </button>
+  
+  <header>A+B Toys Catalog</header>
+  
+  <div class="search-container">
+    <input type="text" id="search" placeholder="Search toys...">
+  </div>
+  
+  <div class="filter-buttons">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="bike">Bikes</button>
+    <button class="filter-btn" data-filter="safety">Safety</button>
+    <button class="filter-btn" data-filter="eco">Eco-Friendly</button>
+    <button class="filter-btn" data-filter="premium">Premium</button>
+  </div>
+  
+  <!-- Skeleton Loading -->
+  <div class="skeleton-loading">
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+  </div>
+  
+  <main>
+    <!-- Product 1 -->
+    <div class="card" data-category="bike">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/157Y4S1r/bike1.png" alt="Bike Toy 1" />
+      <button class="quick-view" data-id="1">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 1</h3>
+        <p>Fun and colorful bike toy for kids.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 2 -->
+    <div class="card" data-category="bike safety">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/d1Rx0TJh/bike2.png" alt="Bike Toy 2" />
+      <button class="quick-view" data-id="2">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 2</h3>
+        <p>Durable and safe bike toy with bright colors.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 3 -->
+    <div class="card" data-category="bike">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/jwk5VGLd/bike3.png" alt="Bike Toy 3" />
+      <button class="quick-view" data-id="3">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 3</h3>
+        <p>Perfect gift for young riders.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 4 -->
+    <div class="card" data-category="bike">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/DywM2ZHz/bike4.png" alt="Bike Toy 4" />
+      <button class="quick-view" data-id="4">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 4</h3>
+        <p>Colorful and fun, built for kids.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 5 -->
+    <div class="card" data-category="bike safety">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/mzrD5bZ5/bike6.jpg" alt="Bike Toy 5" />
+      <button class="quick-view" data-id="5">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 5</h3>
+        <p>New design with enhanced safety features.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 6 -->
+    <div class="card" data-category="bike">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/vc7sfJbg/bike7.jpg" alt="Bike Toy 6" />
+      <button class="quick-view" data-id="6">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 6</h3>
+        <p>Lightweight aluminum frame for easy handling.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 7 -->
+    <div class="card" data-category="bike safety">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/ThDGYysc/bike8.jpg" alt="Bike Toy 7" />
+      <button class="quick-view" data-id="7">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 7</h3>
+        <p>Adjustable seat grows with your child.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 8 -->
+    <div class="card" data-category="bike premium">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/wRKCsVrQ/bike9.jpg" alt="Bike Toy 8" />
+      <button class="quick-view" data-id="8">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 8</h3>
+        <p>Special edition with premium decals.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+    
+    <!-- Product 9 -->
+    <div class="card" data-category="bike safety">
+      <button class="like-btn" aria-label="Add to favorites">
+        <i class="far fa-heart"></i>
+      </button>
+      <img src="https://i.postimg.cc/y89XBC1d/bike11.jpg" alt="Bike Toy 9" />
+      <button class="quick-view" data-id="9">Quick View</button>
+      <div class="info">
+        <h3>Bike Toy Model 9</h3>
+        <p>Eco-friendly materials, sustainable design.</p>
+        <button class="add-to-cart">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Quick View Modal -->
+  <div class="modal" id="quickViewModal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="modal-body">
+        <!-- Content will be loaded dynamically -->
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>© 2025 A+B Toys. All rights reserved.</p>
+    <div class="social-icons">
+      <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" aria-label="Back to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Dark Mode Toggle
+      const themeToggle = document.querySelector('.theme-toggle');
+      themeToggle.addEventListener('click', () => {
+        document.body.setAttribute('data-theme', 
+          document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        
+        // Update icon
+        const icon = themeToggle.querySelector('i');
+        if (document.body.getAttribute('data-theme') === 'dark') {
+          icon.classList.replace('fa-moon', 'fa-sun');
+          themeToggle.setAttribute('aria-label', 'Toggle light mode');
+        } else {
+          icon.classList.replace('fa-sun', 'fa-moon');
+          themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+        }
+      });
+      
+      // Back to Top Button
+      const backToTopBtn = document.querySelector('.back-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+          backToTopBtn.classList.add('visible');
+        } else {
+          backToTopBtn.classList.remove('visible');
+        }
+      });
+      
+      backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      
+      // Like Button Functionality
+      const likeButtons = document.querySelectorAll('.like-btn');
+      likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          this.classList.toggle('active');
+          const icon = this.querySelector('i');
+          
+          if (this.classList.contains('active')) {
+            icon.classList.replace('far', 'fas');
+            this.setAttribute('aria-label', 'Remove from favorites');
+          } else {
+            icon.classList.replace('fas', 'far');
+            this.setAttribute('aria-label', 'Add to favorites');
+          }
+        });
+      });
+      
+      // Filter functionality
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      const cards = document.querySelectorAll('.card');
+      
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Update active button
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          
+          const filter = button.dataset.filter;
+          
+          // Filter cards
+          cards.forEach(card => {
+            if (filter === 'all' || card.dataset.category.includes(filter)) {
+              card.style.display = 'block';
+              card.style.animation = 'fadeInUp 0.6s forwards';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+      
+      // Search functionality
+      const searchInput = document.getElementById('search');
+      searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        cards.forEach(card => {
+          const title = card.querySelector('h3').textContent.toLowerCase();
+          const description = card.querySelector('p').textContent.toLowerCase();
+          
+          if (title.includes(searchTerm) || description.includes(searchTerm)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+      
+      // Add to cart animation
+      const addToCartButtons = document.querySelectorAll('.add-to-cart');
+      const cartCounter = document.querySelector('.cart-counter');
+      let cartCount = 0;
+      
+      addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Animation effect
+          this.innerHTML = '<i class="fas fa-check"></i> Added!';
+          this.style.backgroundColor = '#4CAF50';
+          
+          // Update cart counter
+          cartCount++;
+          cartCounter.textContent = cartCount;
+          cartCounter.classList.add('animate__animated', 'animate__bounce');
+          setTimeout(() => {
+            cartCounter.classList.remove('animate__animated', 'animate__bounce');
+          }, 1000);
+          
+          setTimeout(() => {
+            this.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+            this.style.backgroundColor = '';
+          }, 1500);
+        });
+      });
+      
+      // Quick View Modal
+      const quickViewButtons = document.querySelectorAll('.quick-view');
+      const modal = document.getElementById('quickViewModal');
+      const closeModal = document.querySelector('.close-modal');
+      
+      quickViewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const productId = this.getAttribute('data-id');
+          const productCard = this.closest('.card');
+          
+          // In a real app, you would fetch detailed product info here
+          const productHTML = `
+            <div class="modal-product">
+              <div class="modal-product-image">
+                ${productCard.querySelector('img').outerHTML}
+              </div>
+              <div class="modal-product-info">
+                <h2>${productCard.querySelector('h3').textContent}</h2>
+                <p>${productCard.querySelector('p').textContent}</p>
+                <div class="product-actions">
+                  <button class="add-to-cart">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                  </button>
+                  <button class="like-btn">
+                    <i class="far fa-heart"></i> Add to Wishlist
+                  </button>
+                </div>
+                <div class="product-details">
+                  <h3>Product Details</h3>
+                  <ul>
+                    <li>Age Range: 3-8 years</li>
+                    <li>Material: High-quality plastic</li>
+                    <li>Weight: 5.5 lbs</li>
+                    <li>Safety Certified</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          document.querySelector('.modal-body').innerHTML = productHTML;
+          modal.style.display = 'flex';
+        });
+      });
+      
+      closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+      
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+      
+      // Simulate loading (for demo purposes)
+      setTimeout(() => {
+        document.querySelector('.skeleton-loading').style.display = 'none';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
